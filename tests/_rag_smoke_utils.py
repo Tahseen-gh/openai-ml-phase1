@@ -1,7 +1,7 @@
 import importlib
 import inspect
-from typing import Any
 from types import ModuleType
+from typing import Any
 
 
 def _smoke_module(modname: str) -> None:

@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import List, Sequence
-from rag.chunking import Chunk
+
 from rank_bm25 import BM25Okapi
+
+from rag.chunking import Chunk
 
 _WORD_RE = re.compile(r"[A-Za-z0-9_']+")
 
 
-def _tokenize(s: str) -> List[str]:
+def _tokenize(s: str) -> list[str]:
     return [w.lower() for w in _WORD_RE.findall(s)]
 
 
@@ -21,8 +23,8 @@ class ScoredChunk:
 
 class BM25ChunkIndex:
     def __init__(self) -> None:
-        self._chunks: List[Chunk] = []
-        self._tok_corpus: List[List[str]] = []
+        self._chunks: list[Chunk] = []
+        self._tok_corpus: list[list[str]] = []
         self._bm25: BM25Okapi | None = None
 
     def build(self, chunks: Sequence[Chunk]) -> None:
@@ -31,7 +33,7 @@ class BM25ChunkIndex:
         corpus = self._tok_corpus if self._tok_corpus else [[""]]
         self._bm25 = BM25Okapi(corpus)
 
-    def search(self, query: str, k: int = 5) -> List[ScoredChunk]:
+    def search(self, query: str, k: int = 5) -> list[ScoredChunk]:
         if self._bm25 is None:
             raise RuntimeError("Index not built. Call build() first.")
         toks = _tokenize(query)

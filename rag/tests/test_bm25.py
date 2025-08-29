@@ -1,5 +1,5 @@
-from rag.chunking import chunk_text
 from rag.bm25_index import BM25ChunkIndex
+from rag.chunking import chunk_text
 
 
 def test_bm25_ranks_relevant_higher():

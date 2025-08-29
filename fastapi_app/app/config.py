@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -12,12 +12,12 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # Auth
-    api_key: Optional[str] = None  # header: X-API-KEY
-    jwt_secret: Optional[str] = None
+    api_key: str | None = None  # header: X-API-KEY
+    jwt_secret: str | None = None
     jwt_algorithm: str = "HS256"  # used if jwt_secret is set
 
     # CORS
-    cors_origins: List[str] = Field(default_factory=list)
+    cors_origins: list[str] = Field(default_factory=list)
 
     # Protection
     rate_limit_qps: float = 5.0

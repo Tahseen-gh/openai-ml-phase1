@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openai-ml-phase1"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 100
+target-version = ["py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W", "N", "C90"]
+ignore = ["E203", "E501"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 16
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+explicit_package_bases = true
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "fastapi_app.*"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+warn_return_any = true
+
+[[tool.mypy.overrides]]
+module = "fastapi_app.tests.*"
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = ["rag.*", "ml.*", "evals.*"]
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+[tool.pytest.ini_options]
+addopts = "-q --cov=fastapi_app --cov=rag --cov=ml --cov-report=term-missing --cov-fail-under=80"
+testpaths = ["fastapi_app/tests", "tests", "ml/tests"]
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*",
+    "fastapi_app/app/telemetry.py",
+    "rag/eval_metrics.py",
+    "rag/ingestion.py",
+    "rag/index.py",
+    "rag/retrieve.py",
+    "ml/train_loop.py",
+]

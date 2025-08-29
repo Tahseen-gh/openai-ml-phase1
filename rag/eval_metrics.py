@@ -1,15 +1,17 @@
 from __future__ import annotations
+
 import json
 import math
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, List, Sequence, Tuple
+from typing import Any
 
 try:
-    from .chunking import Chunk, chunk_text
     from .bm25_index import BM25ChunkIndex
+    from .chunking import Chunk, chunk_text
 except Exception:  # pragma: no cover
-    from rag.chunking import Chunk, chunk_text
     from rag.bm25_index import BM25ChunkIndex
+    from rag.chunking import Chunk, chunk_text
 ROOT = Path(__file__).resolve().parent
 CORPUS_DIR = ROOT / "sample_corpus"
 FIXTURES = ROOT / "fixtures.json"
@@ -24,20 +26,20 @@ for f in (ROOT / "fixtures.json", ROOT / "eval" / "fixtures.json"):
         break
 
 
-def _load_corpus() -> List["Chunk"]:
+def _load_corpus() -> list[Chunk]:
     CORPUS_DIR.mkdir(parents=True, exist_ok=True)
-    chunks: List["Chunk"] = []
+    chunks: list[Chunk] = []
     for p in sorted(CORPUS_DIR.glob("*.txt")):
         text = p.read_text(encoding="utf-8")
         chunks.extend(chunk_text(p.stem, text, max_chars=500, overlap=80))
     return chunks
 
 
-def _load_queries() -> List[Tuple[str, str]]:
+def _load_queries() -> list[tuple[str, str]]:
     if FIXTURES.exists():
         data = json.loads(FIXTURES.read_text(encoding="utf-8-sig"))
         if isinstance(data, dict) and isinstance(data.get("queries"), list):
-            qs: List[Tuple[str, str]] = []
+            qs: list[tuple[str, str]] = []
             for obj in data["queries"]:
                 if isinstance(obj, dict):
                     q = obj.get("query") or obj.get("q") or obj.get("text")
@@ -52,19 +54,15 @@ def _load_queries() -> List[Tuple[str, str]]:
             if qs:
                 return qs
         if isinstance(data, dict):
-            items = [
-                (k, v)
-                for k, v in data.items()
-                if isinstance(k, str) and isinstance(v, str)
-            ]
+            items = [(k, v) for k, v in data.items() if isinstance(k, str) and isinstance(v, str)]
             if items:
                 return items
     stems = [p.stem for p in sorted(CORPUS_DIR.glob("*.txt"))]
     return [(s, s) for s in stems]
 
 
-def _doc_ids(results: Sequence[Any]) -> List[str]:
-    ids: List[str] = []
+def _doc_ids(results: Sequence[Any]) -> list[str]:
+    ids: list[str] = []
     for r in results:
         if isinstance(r, tuple) and r:
             c = r[0]
@@ -78,9 +76,7 @@ def _doc_ids(results: Sequence[Any]) -> List[str]:
 def main() -> None:
     chunks = _load_corpus()
     if not chunks:
-        print(
-            f"[eval] No corpus files found in {CORPUS_DIR}. Add *.txt files and try again."
-        )
+        print(f"[eval] No corpus files found in {CORPUS_DIR}. Add *.txt files and try again.")
         return
     bm25_cls: Any = BM25ChunkIndex
     try:
