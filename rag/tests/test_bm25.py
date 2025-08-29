@@ -11,3 +11,9 @@ def test_bm25_ranks_relevant_higher():
     idx.build(chunks_a + chunks_b)
     top = idx.search("felines purr", k=1)[0]
     assert top.chunk.doc_id == "A"
+
+
+def test_empty_build_search_returns_empty_list():
+    idx = BM25ChunkIndex()
+    idx.build([])
+    assert idx.search("anything") == []

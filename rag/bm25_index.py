@@ -28,12 +28,14 @@ class BM25ChunkIndex:
     def build(self, chunks: Sequence[Chunk]) -> None:
         self._chunks = list(chunks)
         self._tok_corpus = [_tokenize(c.text) for c in self._chunks]
-        corpus = self._tok_corpus if self._tok_corpus else [[""]]
-        self._bm25 = BM25Okapi(corpus)
+        if self._tok_corpus:
+            self._bm25 = BM25Okapi(self._tok_corpus)
+        else:
+            self._bm25 = None
 
     def search(self, query: str, k: int = 5) -> List[ScoredChunk]:
-        if self._bm25 is None:
-            raise RuntimeError("Index not built. Call build() first.")
+        if self._bm25 is None or not self._chunks:
+            return []
         toks = _tokenize(query)
         scores = self._bm25.get_scores(toks)
         order = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
