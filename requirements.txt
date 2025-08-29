@@ -1,4 +1,4 @@
-﻿fastapi==0.116.*
+fastapi==0.116.*
 uvicorn[standard]==0.30.6
 pydantic==2.9.2
 python-dotenv==1.0.1
@@ -8,3 +8,7 @@ black==24.8.0
 ruff==0.6.9
 pre-commit==3.8.0
 pydantic-settings==2.6.*
+
+PyJWT==2.9.*
+
+prometheus-fastapi-instrumentator==6.1.*
