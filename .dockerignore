@@ -1,0 +1,10 @@
+﻿__pycache__/
+.pytest_cache/
+.venv/
+.hypothesis/
+data/
+dist/
+build/
+.coverage
+*.pyc
+.git
