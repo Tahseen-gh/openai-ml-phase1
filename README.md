@@ -26,3 +26,13 @@ ml/               # minimal training loop examples & tests
 ```
 
 > Next Phases will fill out `rag/` (hybrid retrieval), `evals/` (OpenAI Evals), and safety+observability.
+
+
+### Health
+
+```bash
+curl -s http://127.0.0.1:8000/api/v1/health
+# or, if API key enabled:
+# export API_KEY=change-me
+# curl -H "X-API-KEY: $API_KEY" http://127.0.0.1:8000/api/v1/health
+```
