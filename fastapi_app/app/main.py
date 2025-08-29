@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 import json
 import logging
 import os
@@ -215,3 +216,14 @@ def sink_endpoint(_: Any = None) -> dict[str, Any]:
 # Mount existing v1 routes + our small Phase 2 endpoints
 app.include_router(v1_router, prefix="/api/v1")
 app.include_router(_phase2, prefix="/api/v1")
+
+
+# --- telemetry startup hook ---
+@app.on_event("startup")
+def _init_tracing() -> None:
+    try:
+        from fastapi_app.app.telemetry import init_otel  # local import to avoid E402
+
+        init_otel()
+    except Exception:
+        pass

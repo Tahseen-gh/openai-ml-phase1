@@ -1,0 +1,4 @@
+﻿[
+  {"query": "What does RAG do?",         "relevant_docs": ["a.txt"]},
+  {"query": "Which framework is FastAPI?", "relevant_docs": ["b.txt"]}
+]
