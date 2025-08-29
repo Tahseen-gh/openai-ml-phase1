@@ -7,12 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GIT_SHA: ${{ github.sha }}
+      FUZZ_MODE: 'true'
+      RATE_LIMIT_QPS: '1000000'
+      REQUEST_BODY_MAX_BYTES: '10485760'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install -U pip
-      - run: python -m pip install -r requirements.txt -r requirements-dev.txt
+      - run: python -m pip install -r requirements.txt -r requirements-dev.txt schemathesis[fastapi]
       - name: Schemathesis (ASGI app)
-        run: schemathesis run asgi:fastapi_app.app.main:app --workers=1 --checks=all --max-examples=25 --hypothesis-deadline=None
+        run: schemathesis run --app fastapi_app.app.main:app /openapi.json --workers=1 --checks=all --max-examples=25 --hypothesis-deadline=None

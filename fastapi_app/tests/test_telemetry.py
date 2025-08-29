@@ -1,4 +1,3 @@
-import os
 from fastapi_app.app.telemetry import init_otel
 
 

@@ -63,3 +63,19 @@ pytest -q
 # 6) Pre-commit hooks
 pre-commit run --all-files
 ```
+
+## Security
+
+- **Bandit** runs in pre-commit and CI. Any MEDIUM or HIGH findings fail the build; suppress only with a justified `# nosec` comment.
+- **pip-audit** runs in CI to report vulnerable dependencies (currently non-blocking).
+- **Dependabot** opens weekly grouped PRs for runtime libraries, dev tools, and GitHub Actions with `dependencies` and `security` labels.
+
+## Operations
+
+- **Readiness**: `GET /api/v1/ready` returns `{ "ready": true, "version": "<v>", "git_sha": "<sha>" }`.
+- **Correlation IDs**: requests accept and echo an `X-Request-ID` header (configurable) and include `request_id` in Problem Details.
+- **JSON logs**: one line per request, e.g.:
+
+```json
+{"ts":"2024-01-01T00:00:00Z","level":"info","logger":"access","request_id":"...","method":"GET","path":"/api/v1/ready","status":200,"duration_ms":1.2,"client_ip":"127.0.0.1","user_agent":"curl"}
+```
