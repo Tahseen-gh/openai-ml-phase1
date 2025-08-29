@@ -1,4 +1,4 @@
-﻿# Domain RAG & Evals â€” Phase 1 Scaffold
+﻿# Domain RAG & Evals Phase 1 Scaffold
 
 This repo boots a production-leaning LLM/RAG project with:
 - **FastAPI** service (`/api/v1/health` endpoint)
