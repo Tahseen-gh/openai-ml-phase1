@@ -39,7 +39,7 @@ pip_audit==2.7.3
 platformdirs==4.4.0
 pluggy==1.6.0
 pre-commit==3.8.0
-py-serializable==1.1.2
+py-serializable==2.1.0
 pydantic==2.9.2
 pydantic-settings==2.6.1
 pydantic_core==2.23.4
