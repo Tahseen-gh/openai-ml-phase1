@@ -1,4 +1,4 @@
-﻿# Domain RAG & Evals Phase 1 Scaffold
+# Domain RAG & Evals Phase 1 Scaffold
 
 This repo boots a production-leaning LLM/RAG project with:
 - **FastAPI** service (`/api/v1/health` endpoint)
@@ -35,4 +35,31 @@ curl -s http://127.0.0.1:8000/api/v1/health
 # or, if API key enabled:
 # export API_KEY=change-me
 # curl -H "X-API-KEY: $API_KEY" http://127.0.0.1:8000/api/v1/health
+```
+
+
+### Quickstart
+
+```bash
+# 1) Create and activate venv (Windows PowerShell)
+python -m venv .venv
+. .venv/Scripts/Activate.ps1
+
+# 2) Install
+python -m pip install -r requirements.txt -r requirements-dev.txt
+
+# 3) Run API (hot reload for dev)
+uvicorn fastapi_app.app.main:app --reload
+
+# 4) Health
+curl -s http://127.0.0.1:8000/api/v1/health
+# If API key is enabled:
+# export API_KEY=change-me
+# curl -H "X-API-KEY: $API_KEY" http://127.0.0.1:8000/api/v1/health
+
+# 5) Tests (coverage gate from pytest.ini)
+pytest -q
+
+# 6) Pre-commit hooks
+pre-commit run --all-files
 ```
