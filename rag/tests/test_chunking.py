@@ -10,7 +10,7 @@ def test_chunking_headings_and_overlap():
     )
     chunks = chunk_text("doc1", text, max_chars=500, overlap=80)
     assert all(len(c.text) <= 500 for c in chunks)
-    for a, b in zip(chunks, chunks[1:]):
+    for a, b in zip(chunks, chunks[1:], strict=False):
         tail = a.text[-80:]
         assert tail[:40] in b.text
     assert chunks[0].heading == "Intro"

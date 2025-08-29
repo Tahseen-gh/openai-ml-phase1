@@ -1,24 +1,24 @@
 from __future__ import annotations
 
-
 import json
 import logging
 import os
 import time
 import uuid
-from typing import Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 from prometheus_fastapi_instrumentator import Instrumentator
-from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, PlainTextResponse, Response
 from starlette.types import ASGIApp
 
-from .config import settings
 from .api.v1 import router as v1_router
+from .config import settings
 
 # --- logging --------------------------------------------------------------
 logging.basicConfig(level=logging.INFO)
@@ -29,9 +29,7 @@ def jsonlog(message: str, **fields: Any) -> None:
     logger.info(json.dumps({"message": message, **fields}))
 
 
-def _problem(
-    title: str, status: int, request_id: str, detail: str | None = None
-) -> dict[str, Any]:
+def _problem(title: str, status: int, request_id: str, detail: str | None = None) -> dict[str, Any]:
     return {
         "type": "about:blank",
         "title": title,
@@ -71,9 +69,7 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
             cl = request.headers.get("content-length")
             try:
                 if cl and int(cl) > self.max_bytes:
-                    return PlainTextResponse(
-                        "Request entity too large", status_code=413
-                    )
+                    return PlainTextResponse("Request entity too large", status_code=413)
             except Exception:
                 pass
             body = await request.body()
@@ -123,9 +119,7 @@ async def add_request_id_and_timing(
     if settings.rate_limit_qps > 0:
         key = f"{client_ip}:{path}"
         if not _limiter.allow(key):
-            return JSONResponse(
-                _problem("Too Many Requests", 429, rid), status_code=429
-            )
+            return JSONResponse(_problem("Too Many Requests", 429, rid), status_code=429)
 
     response: Response | None = None
     try:
@@ -165,11 +159,13 @@ async def unhandled_exc_handler(request: Request, exc: Exception) -> Response:
 # --- Auth (API key OR JWT if configured) ---------------------------------
 api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 bearer = HTTPBearer(auto_error=False)
+_api_key_dep = Depends(api_key_header)
+_bearer_dep = Depends(bearer)
 
 
 def require_auth(
-    key: str | None = Depends(api_key_header),
-    token: HTTPAuthorizationCredentials | None = Depends(bearer),
+    key: str | None = _api_key_dep,
+    token: HTTPAuthorizationCredentials | None = _bearer_dep,
 ) -> None:
     if not settings.api_key and not settings.jwt_secret:
         return  # no auth configured
