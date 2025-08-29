@@ -1,7 +1,8 @@
 from pathlib import Path
+
 import pytest
 
-from rag.ingestion import simple_chunk, ingest_files
+from rag.ingestion import ingest_files, simple_chunk
 
 
 def test_simple_chunk_variants(tmp_path: Path) -> None:

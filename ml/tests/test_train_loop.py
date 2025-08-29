@@ -7,9 +7,9 @@ def test_train_loop_runs():
     assert loss is None or (isinstance(loss, float) and loss > 0.0)
 
 
-def test_train_loop_with_mocked_torch(monkeypatch):
-    import types
+def test_train_loop_with_mocked_torch(monkeypatch):  # noqa: C901
     import sys
+    import types
 
     class DummyTensor:
         def __init__(self, value: float = 1.0) -> None:
