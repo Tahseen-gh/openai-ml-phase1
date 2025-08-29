@@ -31,3 +31,12 @@ up:
 
 down:
 	docker compose down
+
+typecheck:
+	python -m mypy fastapi_app rag ml
+
+coverage:
+	python -m pytest
+
+audit:
+	python -m pip_audit -r requirements.txt
