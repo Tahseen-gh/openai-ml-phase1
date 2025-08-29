@@ -1,0 +1,2 @@
+﻿{"question": "What is the health endpoint?", "answer": "GET /api/v1/health"}
+{"question": "What framework serves the API?", "answer": "FastAPI"}
