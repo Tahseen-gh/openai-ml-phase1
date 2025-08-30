@@ -1,30 +1,10 @@
-version: 2
+﻿version: 2
 updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "06:00"
-      timezone: "UTC"
-    open-pull-requests-limit: 5
-    labels: ["dependencies", "security"]
-    groups:
-      runtime:
-        patterns: ["fastapi*", "uvicorn*", "pydantic*", "requests*", "prometheus*", "faiss*", "sentence-transformers*", "numpy*", "scipy*"]
-      dev:
-        patterns: ["pytest*", "coverage*", "ruff*", "black*", "mypy*", "bandit*", "schemathesis*", "pip-audit*"]
-    rebase-strategy: auto
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "06:00"
-      timezone: "UTC"
-    open-pull-requests-limit: 5
-    labels: ["dependencies", "security"]
-    groups:
-      actions:
-        patterns: ["*"]
-    rebase-strategy: auto
