@@ -1,5 +1,4 @@
-name: API Fuzz / schemathesis
-
+name: API Fuzz
 on:
   pull_request:
   push:
@@ -9,32 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GIT_SHA: ${{ github.sha }}
-      FUZZ_MODE: 'true'
-      RATE_LIMIT_QPS: '1000000'
-      REQUEST_BODY_MAX_BYTES: '10485760'
+      FUZZ_MODE: "true"
+      RATE_LIMIT_QPS: "1000000"
+      REQUEST_BODY_MAX_BYTES: "10485760"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: "**/requirements*.txt"
       - name: Install dependencies
         run: |
-codex/set-up-ci-workflow-with-coverage-gate-2fsau3
-          pip install -U pip
-          pip install -r requirements.txt -r requirements-dev.txt schemathesis[fastapi]
-
           python -m pip install -U pip
-          python -m pip install -r requirements.txt -r requirements-dev.txt schemathesis[fastapi]
- main
-      - name: Schemathesis (ASGI app)
+          python -m pip install -r requirements.txt -r requirements-dev.txt
+          python -m pip install schemathesis[fastapi]
+      - name: Schemathesis (ASGI, deterministic, OAS 3.1)
         run: |
           schemathesis run --app fastapi_app.app.main:app /openapi.json \
             --workers=1 --checks=all \
-codex/set-up-ci-workflow-with-coverage-gate-2fsau3
             --hypothesis-max-examples=25 --hypothesis-deadline=none --hypothesis-seed=1337 \
             --experimental=openapi-3.1
-
-            --hypothesis-max-examples=25 \
-            --hypothesis-deadline=none \
-            --hypothesis-seed=1337
- main
