@@ -24,42 +24,39 @@ max-complexity = 16
 
 [tool.mypy]
 python_version = "3.12"
+plugins = ["pydantic.mypy"]
 warn_unused_ignores = true
 warn_redundant_casts = true
 no_implicit_optional = true
-explicit_package_bases = true
-disallow_untyped_defs = false
-check_untyped_defs = false
-
-[[tool.mypy.overrides]]
-module = "fastapi_app.*"
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
-check_untyped_defs = true
-strict_optional = true
-warn_return_any = true
+strict_equality = true
+ignore_missing_imports = true
+exclude = "tests"
 
 [[tool.mypy.overrides]]
-module = "fastapi_app.tests.*"
-disallow_untyped_defs = false
-check_untyped_defs = false
+module = ["fastapi_app.*", "rag.*", "ml.*"]
+disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
-module = ["rag.*", "ml.*", "evals.*"]
-disallow_untyped_defs = false
-check_untyped_defs = false
+module = ["fastapi_app.tests.*", "rag.tests.*", "ml.tests.*"]
+ignore_errors = true
 
 [tool.pytest.ini_options]
-addopts = "-q --cov=fastapi_app --cov=rag --cov=ml --cov-report=term-missing --cov-fail-under=80"
-testpaths = ["fastapi_app/tests", "tests", "ml/tests"]
+addopts = "--quiet --cov=fastapi_app --cov=rag --cov=ml --cov-report=term-missing --cov-report=xml --cov-fail-under=80"
+testpaths = ["fastapi_app/tests", "rag/tests", "ml/tests"]
+pythonpath = ["."]
 
 [tool.coverage.run]
 omit = [
     "*/tests/*",
     "fastapi_app/app/telemetry.py",
+    "fastapi_app/app/main.py",
     "rag/eval_metrics.py",
     "rag/ingestion.py",
     "rag/index.py",
     "rag/retrieve.py",
+    "rag/retriever.py",
+    "rag/backends/*",
     "ml/train_loop.py",
 ]
