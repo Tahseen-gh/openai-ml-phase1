@@ -106,7 +106,7 @@ def chunk_text(doc_id: str, text: str, *, max_chars: int = 800, overlap: int = 1
     buf: list[tuple[int, int]] = []
     buf_chars = 0
 
-    def flush():
+    def flush() -> None:
         nonlocal buf, buf_chars
         if not buf:
             return

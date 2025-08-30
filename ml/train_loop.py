@@ -3,7 +3,7 @@ Skips if torch is not installed; useful to keep tests light in CI.
 """
 
 
-def train_minimal(epochs: int = 1):
+def train_minimal(epochs: int = 1) -> float | None:
     try:
         import torch
         import torch.nn as nn

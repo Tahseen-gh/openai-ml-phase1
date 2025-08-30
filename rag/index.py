@@ -2,10 +2,10 @@
 
 
 class InMemoryIndex:
-    def __init__(self):
+    def __init__(self) -> None:
         self.docs: list[dict] = []
 
-    def add(self, docs: list[dict]):
+    def add(self, docs: list[dict]) -> None:
         self.docs.extend(docs)
 
     def search(self, query: str, k: int = 5) -> list[dict]:
