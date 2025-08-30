@@ -22,6 +22,8 @@ repos:
   hooks:
     - id: mypy
       additional_dependencies: [types-requests]
+      args: [--ignore-missing-imports, fastapi_app]
+      pass_filenames: false
 
 - repo: https://github.com/pypa/pip-audit
   rev: v2.9.0
@@ -34,3 +36,12 @@ repos:
   hooks:
     - id: detect-secrets
       args: [--baseline, .secrets.baseline]
+
+- repo: local
+  hooks:
+    - id: bandit
+      name: bandit
+      entry: bandit -q -r fastapi_app -x tests,__pycache__ --severity-level medium --confidence-level medium
+      language: system
+      types: [python]
+      pass_filenames: false
