@@ -21,6 +21,7 @@ htmlcov/
 !.coveragerc
 dist/
 build/
+evals/latest.json
 
 # OS / IDE
 .DS_Store
@@ -29,4 +30,3 @@ build/
 
 coverage.xml
 .hypothesis/
-data/

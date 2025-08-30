@@ -1,0 +1,21 @@
+{
+  "git_sha": "7cc8228934a0c8f31241f4a70e0b778f190adb06",
+  "backend": "hybrid",
+  "seed": 1337,
+  "manifest_version": "cf8572e5",
+  "metrics": {
+    "recall@1": 1.0,
+    "recall@3": 1.0,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "MRR": 1.0,
+    "NDCG@10": 1.0
+  },
+  "stats": {
+    "queries": 80,
+    "docs": 50
+  },
+  "versions": {
+    "numpy": "2.3.2"
+  }
+}
