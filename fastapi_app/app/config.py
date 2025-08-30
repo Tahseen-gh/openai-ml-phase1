@@ -26,5 +26,10 @@ class Settings(BaseSettings):
     # Observability
     metrics_enabled: bool = True
 
+    # Retrieval
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    hybrid_alpha: float = 0.5
+    use_dummy_embeddings: bool = True
+
 
 settings = Settings()

@@ -1,0 +1,80 @@
+{"id": "q001", "q": "information about topic number 1", "relevant_ids": ["doc_0001"]}
+{"id": "q002", "q": "information about topic number 2", "relevant_ids": ["doc_0002"]}
+{"id": "q003", "q": "information about topic number 3", "relevant_ids": ["doc_0003"]}
+{"id": "q004", "q": "information about topic number 4", "relevant_ids": ["doc_0004"]}
+{"id": "q005", "q": "information about topic number 5", "relevant_ids": ["doc_0005"]}
+{"id": "q006", "q": "information about topic number 6", "relevant_ids": ["doc_0006"]}
+{"id": "q007", "q": "information about topic number 7", "relevant_ids": ["doc_0007"]}
+{"id": "q008", "q": "information about topic number 8", "relevant_ids": ["doc_0008"]}
+{"id": "q009", "q": "information about topic number 9", "relevant_ids": ["doc_0009"]}
+{"id": "q010", "q": "information about topic number 10", "relevant_ids": ["doc_0010"]}
+{"id": "q011", "q": "information about topic number 11", "relevant_ids": ["doc_0011"]}
+{"id": "q012", "q": "information about topic number 12", "relevant_ids": ["doc_0012"]}
+{"id": "q013", "q": "information about topic number 13", "relevant_ids": ["doc_0013"]}
+{"id": "q014", "q": "information about topic number 14", "relevant_ids": ["doc_0014"]}
+{"id": "q015", "q": "information about topic number 15", "relevant_ids": ["doc_0015"]}
+{"id": "q016", "q": "information about topic number 16", "relevant_ids": ["doc_0016"]}
+{"id": "q017", "q": "information about topic number 17", "relevant_ids": ["doc_0017"]}
+{"id": "q018", "q": "information about topic number 18", "relevant_ids": ["doc_0018"]}
+{"id": "q019", "q": "information about topic number 19", "relevant_ids": ["doc_0019"]}
+{"id": "q020", "q": "information about topic number 20", "relevant_ids": ["doc_0020"]}
+{"id": "q021", "q": "information about topic number 21", "relevant_ids": ["doc_0021"]}
+{"id": "q022", "q": "information about topic number 22", "relevant_ids": ["doc_0022"]}
+{"id": "q023", "q": "information about topic number 23", "relevant_ids": ["doc_0023"]}
+{"id": "q024", "q": "information about topic number 24", "relevant_ids": ["doc_0024"]}
+{"id": "q025", "q": "information about topic number 25", "relevant_ids": ["doc_0025"]}
+{"id": "q026", "q": "information about topic number 26", "relevant_ids": ["doc_0026"]}
+{"id": "q027", "q": "information about topic number 27", "relevant_ids": ["doc_0027"]}
+{"id": "q028", "q": "information about topic number 28", "relevant_ids": ["doc_0028"]}
+{"id": "q029", "q": "information about topic number 29", "relevant_ids": ["doc_0029"]}
+{"id": "q030", "q": "information about topic number 30", "relevant_ids": ["doc_0030"]}
+{"id": "q031", "q": "information about topic number 31", "relevant_ids": ["doc_0031"]}
+{"id": "q032", "q": "information about topic number 32", "relevant_ids": ["doc_0032"]}
+{"id": "q033", "q": "information about topic number 33", "relevant_ids": ["doc_0033"]}
+{"id": "q034", "q": "information about topic number 34", "relevant_ids": ["doc_0034"]}
+{"id": "q035", "q": "information about topic number 35", "relevant_ids": ["doc_0035"]}
+{"id": "q036", "q": "information about topic number 36", "relevant_ids": ["doc_0036"]}
+{"id": "q037", "q": "information about topic number 37", "relevant_ids": ["doc_0037"]}
+{"id": "q038", "q": "information about topic number 38", "relevant_ids": ["doc_0038"]}
+{"id": "q039", "q": "information about topic number 39", "relevant_ids": ["doc_0039"]}
+{"id": "q040", "q": "information about topic number 40", "relevant_ids": ["doc_0040"]}
+{"id": "q041", "q": "information about topic number 41", "relevant_ids": ["doc_0041"]}
+{"id": "q042", "q": "information about topic number 42", "relevant_ids": ["doc_0042"]}
+{"id": "q043", "q": "information about topic number 43", "relevant_ids": ["doc_0043"]}
+{"id": "q044", "q": "information about topic number 44", "relevant_ids": ["doc_0044"]}
+{"id": "q045", "q": "information about topic number 45", "relevant_ids": ["doc_0045"]}
+{"id": "q046", "q": "information about topic number 46", "relevant_ids": ["doc_0046"]}
+{"id": "q047", "q": "information about topic number 47", "relevant_ids": ["doc_0047"]}
+{"id": "q048", "q": "information about topic number 48", "relevant_ids": ["doc_0048"]}
+{"id": "q049", "q": "information about topic number 49", "relevant_ids": ["doc_0049"]}
+{"id": "q050", "q": "information about topic number 50", "relevant_ids": ["doc_0050"]}
+{"id": "q051", "q": "details on topics 1 and 2", "relevant_ids": ["doc_0001", "doc_0002"]}
+{"id": "q052", "q": "details on topics 2 and 3", "relevant_ids": ["doc_0002", "doc_0003"]}
+{"id": "q053", "q": "details on topics 3 and 4", "relevant_ids": ["doc_0003", "doc_0004"]}
+{"id": "q054", "q": "details on topics 4 and 5", "relevant_ids": ["doc_0004", "doc_0005"]}
+{"id": "q055", "q": "details on topics 5 and 6", "relevant_ids": ["doc_0005", "doc_0006"]}
+{"id": "q056", "q": "details on topics 6 and 7", "relevant_ids": ["doc_0006", "doc_0007"]}
+{"id": "q057", "q": "details on topics 7 and 8", "relevant_ids": ["doc_0007", "doc_0008"]}
+{"id": "q058", "q": "details on topics 8 and 9", "relevant_ids": ["doc_0008", "doc_0009"]}
+{"id": "q059", "q": "details on topics 9 and 10", "relevant_ids": ["doc_0009", "doc_0010"]}
+{"id": "q060", "q": "details on topics 10 and 11", "relevant_ids": ["doc_0010", "doc_0011"]}
+{"id": "q061", "q": "details on topics 11 and 12", "relevant_ids": ["doc_0011", "doc_0012"]}
+{"id": "q062", "q": "details on topics 12 and 13", "relevant_ids": ["doc_0012", "doc_0013"]}
+{"id": "q063", "q": "details on topics 13 and 14", "relevant_ids": ["doc_0013", "doc_0014"]}
+{"id": "q064", "q": "details on topics 14 and 15", "relevant_ids": ["doc_0014", "doc_0015"]}
+{"id": "q065", "q": "details on topics 15 and 16", "relevant_ids": ["doc_0015", "doc_0016"]}
+{"id": "q066", "q": "details on topics 16 and 17", "relevant_ids": ["doc_0016", "doc_0017"]}
+{"id": "q067", "q": "details on topics 17 and 18", "relevant_ids": ["doc_0017", "doc_0018"]}
+{"id": "q068", "q": "details on topics 18 and 19", "relevant_ids": ["doc_0018", "doc_0019"]}
+{"id": "q069", "q": "details on topics 19 and 20", "relevant_ids": ["doc_0019", "doc_0020"]}
+{"id": "q070", "q": "details on topics 20 and 21", "relevant_ids": ["doc_0020", "doc_0021"]}
+{"id": "q071", "q": "details on topics 21 and 22", "relevant_ids": ["doc_0021", "doc_0022"]}
+{"id": "q072", "q": "details on topics 22 and 23", "relevant_ids": ["doc_0022", "doc_0023"]}
+{"id": "q073", "q": "details on topics 23 and 24", "relevant_ids": ["doc_0023", "doc_0024"]}
+{"id": "q074", "q": "details on topics 24 and 25", "relevant_ids": ["doc_0024", "doc_0025"]}
+{"id": "q075", "q": "details on topics 25 and 26", "relevant_ids": ["doc_0025", "doc_0026"]}
+{"id": "q076", "q": "details on topics 26 and 27", "relevant_ids": ["doc_0026", "doc_0027"]}
+{"id": "q077", "q": "details on topics 27 and 28", "relevant_ids": ["doc_0027", "doc_0028"]}
+{"id": "q078", "q": "details on topics 28 and 29", "relevant_ids": ["doc_0028", "doc_0029"]}
+{"id": "q079", "q": "details on topics 29 and 30", "relevant_ids": ["doc_0029", "doc_0030"]}
+{"id": "q080", "q": "details on topics 30 and 31", "relevant_ids": ["doc_0030", "doc_0031"]}

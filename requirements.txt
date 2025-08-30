@@ -2,8 +2,14 @@
 rank_bm25==0.2.2
 PyJWT>=2.8.0
 ragas>=0.1.14
+fastapi==0.116.1
+prometheus-fastapi-instrumentator>=7.0.0
 opentelemetry-sdk>=1.27.0
 opentelemetry-instrumentation-fastapi>=0.48b0
 opentelemetry-exporter-otlp>=1.27.0
 cyclonedx-bom>=3.14.0
 detect-secrets>=1.5.0
+structlog>=23
+numpy>=1.26
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4; sys_platform != "win32"
