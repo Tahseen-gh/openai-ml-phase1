@@ -47,7 +47,7 @@ def test_train_loop_with_mocked_torch(monkeypatch):  # noqa: C901
 
         def __call__(self, x: DummyTensor) -> DummyTensor:
             for layer in self.layers:
-                x = layer(x)
+                x = layer(x)  # type: ignore[operator]
             return x
 
     class DummyAdam:
