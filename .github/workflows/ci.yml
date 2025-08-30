@@ -20,6 +20,13 @@ concurrency:
   group: ${{ github.ref }}-ci
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.ref }}-ci
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: tests (py${{ matrix.python-version }})

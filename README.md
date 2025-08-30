@@ -64,6 +64,55 @@ pytest -q
 pre-commit run --all-files
 ```
 
+codex/set-up-ci-workflow-with-coverage-gate-2fsau3
+## Retrieval backends
+
+Query the demo corpus via `/api/v1/search?q=...&backend=bm25|embed|hybrid&k=5`.
+The hybrid backend combines normalized BM25 and embedding scores:
+
+```
+score = (1 - α) * bm25_norm + α * embed_norm
+```
+
+Example (toy numbers):
+
+| backend | doc | score |
+|---------|-----|-------|
+| bm25    | doc1 | 0.82 |
+| embed   | doc2 | 0.87 |
+| hybrid  | doc2 | 0.90 |
+
+Environment knobs:
+
+- `EMBEDDING_MODEL` (default `sentence-transformers/all-MiniLM-L6-v2`)
+- `HYBRID_ALPHA` (weight for embeddings, default `0.5`)
+- `USE_DUMMY_EMBEDDINGS` (set `true` to avoid network calls in tests)
+
+## Evaluation & CI gates
+
+Retrieval quality is measured on a versioned corpus with Recall@1/3/5/10, MRR, and NDCG@10.
+The `Retrieval evals (quality gates)` workflow runs deterministic evaluations for
+`bm25`, `embed`, and `hybrid` backends and fails if any of `recall@3`, `MRR`, or
+`NDCG@10` drop by more than `ALLOWED_REGRESSION_DELTA` (default `0.01`) relative to
+`evals/baseline.json`.
+
+Example baseline metrics:
+
+| backend | recall@3 | MRR | NDCG@10 |
+|---------|----------|-----|---------|
+| bm25    | 1.000    | 1.000 | 1.000 |
+| embed   | 1.000    | 1.000 | 1.000 |
+| hybrid  | 1.000    | 1.000 | 1.000 |
+
+To intentionally update the baseline:
+
+```bash
+python scripts/eval_retrieval.py --backend hybrid --seed 1337
+python scripts/update_baseline.py --from evals/reports/hybrid-<git_sha>.json
+```
+
+The dataset is pinned via `data/manifest.json`; hashes are checked in tests for determinism.
+=======
 ## Security
 
 - **Bandit** runs in pre-commit and CI. Any MEDIUM or HIGH findings fail the build; suppress only with a justified `# nosec` comment.
@@ -79,3 +128,4 @@ pre-commit run --all-files
 ```json
 {"ts":"2024-01-01T00:00:00Z","level":"info","logger":"access","request_id":"...","method":"GET","path":"/api/v1/ready","status":200,"duration_ms":1.2,"client_ip":"127.0.0.1","user_agent":"curl"}
 ```
+main

@@ -1,0 +1,73 @@
+name: Retrieval evals (quality gates)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retrieval-evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    timeout-minutes: 30
+    env:
+      USE_DUMMY_EMBEDDINGS: "false"
+      PYTHONHASHSEED: "1337"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: '**/requirements*.txt'
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -r requirements.txt -r requirements-dev.txt
+          python -m pip install sentence-transformers
+          python -m pip install faiss-cpu || true
+      - name: Eval bm25
+        run: |
+          python scripts/eval_retrieval.py --backend bm25 --k 10 --seed 1337
+          cp evals/latest.json eval-bm25.json
+      - name: Eval embed
+        run: |
+          python scripts/eval_retrieval.py --backend embed --k 10 --seed 1337
+          cp evals/latest.json eval-embed.json
+      - name: Eval hybrid
+        run: |
+          python scripts/eval_retrieval.py --backend hybrid --k 10 --seed 1337
+          cp evals/latest.json eval-hybrid.json
+      - name: Compare to baseline
+        run: python scripts/compare_eval.py --current evals/latest.json --baseline evals/baseline.json --delta 0.01 --gate-metrics recall@3,MRR,NDCG@10
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: retrieval-evals
+          path: |
+            eval-bm25.json
+            eval-embed.json
+            eval-hybrid.json
+      - name: Summary
+        run: |
+          python - <<'PY'
+import json, pathlib, os
+rows = []
+for name in ['bm25','embed','hybrid']:
+    data = json.loads(pathlib.Path(f'eval-{name}.json').read_text())
+    m = data['metrics']
+    rows.append(f"| {name} | {m['recall@3']:.3f} | {m['MRR']:.3f} | {m['NDCG@10']:.3f} |")
+print('| backend | recall@3 | MRR | NDCG@10 |')
+print('|---|---|---|---|')
+print('\n'.join(rows))
+PY >> $GITHUB_STEP_SUMMARY

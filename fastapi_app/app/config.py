@@ -30,5 +30,10 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     request_id_header: str = "X-Request-ID"
 
+    # Retrieval
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    hybrid_alpha: float = 0.5
+    use_dummy_embeddings: bool = True
+
 
 settings = Settings()

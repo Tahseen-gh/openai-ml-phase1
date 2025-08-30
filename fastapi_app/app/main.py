@@ -16,6 +16,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
+from rag.retriever import DOCS_BY_ID, get_backend
+
 from .api.v1 import router as v1_router
 from .config import settings
 from .logging import configure_logging
@@ -153,6 +155,28 @@ def health() -> dict[str, Any]:
     return {"ok": True, "version": APP_VERSION, "git_sha": GIT_SHA}
 
 
+codex/set-up-ci-workflow-with-coverage-gate-2fsau3
+@app.get("/api/v1/search")
+def search(q: str, backend: str = "bm25", k: int = 5) -> dict[str, Any]:
+    try:
+        retr = get_backend(
+            backend,
+            embedding_model=settings.embedding_model,
+            hybrid_alpha=settings.hybrid_alpha,
+            use_dummy_embeddings=settings.use_dummy_embeddings,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="invalid backend") from exc
+    results = retr.search(q, k)
+    return {
+        "query": q,
+        "backend": backend,
+        "results": [
+            {"doc_id": doc_id, "score": score, "text": DOCS_BY_ID[doc_id]}
+            for doc_id, score in results
+        ],
+    }
+
 def _ready_probe() -> bool:
     """Lightweight readiness check placeholder."""
     return True
@@ -162,6 +186,7 @@ class ReadyResponse(BaseModel):
     ready: bool
     version: str
     git_sha: str
+ main
 
 
 # Small extra router: a protected ping + a POST sink for body-limit tests

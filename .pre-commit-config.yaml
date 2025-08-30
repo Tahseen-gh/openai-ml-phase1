@@ -36,6 +36,9 @@ repos:
   hooks:
     - id: detect-secrets
       args: [--baseline, .secrets.baseline]
+ codex/set-up-ci-workflow-with-coverage-gate-2fsau3
+      exclude: ^data/manifest\.json$|^evals/baseline\.json$
+
 
 - repo: local
   hooks:
@@ -45,3 +48,4 @@ repos:
       language: system
       types: [python]
       pass_filenames: false
+main
