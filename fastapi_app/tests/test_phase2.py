@@ -18,6 +18,7 @@ def test_body_size_limit_413() -> None:
     big = "x" * (settings.request_body_max_bytes + 10)
     r = client.post("/api/v1/sink", json={"blob": big})
     assert r.status_code == 413
+    assert r.headers["content-type"] == "application/problem+json"
 
 
 def test_secure_ping_without_auth_when_not_configured() -> None:

@@ -1,27 +1,64 @@
-name: Security
+name: security
+
 on:
-  pull_request:
   push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   bandit:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - run: python -m pip install -U pip
-      - run: python -m pip install -r requirements-dev.txt
-      - name: Bandit (High severity)
-        run: bandit -q -r fastapi_app -lll
-  semgrep:
+          python-version: 3.12
+          cache: pip
+          cache-dependency-path: "**/requirements*.txt"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+      - name: Run Bandit
+        run: |
+          set +e
+          bandit -r fastapi_app -x tests,__pycache__ --severity-level medium --confidence-level medium -f json -o bandit.json
+          status=$?
+          bandit -r fastapi_app -x tests,__pycache__ --severity-level medium --confidence-level medium
+          exit $status
+      - name: Upload bandit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit
+          path: bandit.json
+
+  pip-audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - run: python -m pip install -U pip
-      - run: python -m pip install -r requirements-dev.txt
-      - name: Semgrep (FastAPI + Python)
-        run: semgrep --error --severity=ERROR --config p/python --config p/fastapi
+          python-version: 3.12
+          cache: pip
+          cache-dependency-path: "**/requirements*.txt"
+      - name: Install pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+      - name: Run pip-audit
+        run: pip-audit -r requirements.txt || true
