@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 import uuid
 from collections.abc import Awaitable, Callable
+from collections.abc import Callable as TypingCallable
 from typing import Any
 
 import structlog
@@ -15,7 +16,9 @@ from .config import settings
 from .problem import problem
 
 try:  # optional OTEL
-    from opentelemetry.trace import get_current_span
+    from opentelemetry.trace import get_current_span as _get_current_span
+
+    get_current_span: TypingCallable[[], Any] | None = _get_current_span
 except Exception:  # pragma: no cover - OTEL optional
     get_current_span = None
 
@@ -55,6 +58,7 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         client_ip = request.client.host if request.client else "-"
         path = request.url.path
 
+        response: Response
         if settings.rate_limit_qps > 0:
             key = f"{client_ip}:{path}"
             if not self._limiter.allow(key):
