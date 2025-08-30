@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from .backends.base import RetrievalBackend
 from .backends.bm25 import BM25Backend
 from .backends.embed import DummyEmbeddingModel, EmbeddingBackend, EmbeddingModel
@@ -29,7 +31,8 @@ def _embedding_model(name: str, use_dummy: bool) -> EmbeddingModel:
     class _STWrapper:
         def __init__(self, name: str):
             self.model = SentenceTransformer(name)
-        def encode_texts(self, texts: list[str]):
+
+        def encode_texts(self, texts: list[str]) -> Any:
             return self.model.encode(texts, show_progress_bar=False)
 
     return _STWrapper(name)

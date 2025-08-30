@@ -4,6 +4,7 @@ import logging
 import sys
 
 import structlog
+from structlog.types import Processor
 
 from .config import Settings
 
@@ -11,7 +12,7 @@ from .config import Settings
 def configure_logging(settings: Settings) -> None:
     """Configure structlog-based JSON logging."""
     timestamper = structlog.processors.TimeStamper(fmt="iso", key="ts")
-    processors = [
+    processors: list[Processor] = [
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
         timestamper,
