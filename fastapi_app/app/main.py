@@ -1,48 +1,44 @@
 from __future__ import annotations
 
-import json
-import logging
 import os
-import time
 import uuid
 from collections.abc import Awaitable, Callable
 from typing import Any
 
 import jwt
+import structlog
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 from prometheus_fastapi_instrumentator import Instrumentator
+from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse, PlainTextResponse, Response
+from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
 from rag.retriever import DOCS_BY_ID, get_backend
 
 from .api.v1 import router as v1_router
 from .config import settings
+from .logging import configure_logging
+from .middleware import RequestIdMiddleware
+from .problem import problem
+
+if settings.fuzz_mode:
+    settings.rate_limit_qps = float(os.getenv("RATE_LIMIT_QPS", settings.rate_limit_qps))
+    settings.request_body_max_bytes = int(
+        os.getenv("REQUEST_BODY_MAX_BYTES", settings.request_body_max_bytes)
+    )
+else:
+    settings.rate_limit_qps = 5.0
+    settings.request_body_max_bytes = 100_000
 
 # --- logging --------------------------------------------------------------
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("app")
-
-
-def jsonlog(message: str, **fields: Any) -> None:
-    logger.info(json.dumps({"message": message, **fields}))
-
-
-def _problem(title: str, status: int, request_id: str, detail: str | None = None) -> dict[str, Any]:
-    return {
-        "type": "about:blank",
-        "title": title,
-        "status": status,
-        "detail": detail or title,
-        "request_id": request_id,
-    }
+logger = structlog.get_logger("app")
 
 
 # --- app ------------------------------------------------------------------
-app = FastAPI(title=settings.app_name, debug=settings.debug)
+app = FastAPI(title=settings.app_name, debug=settings.debug, openapi_url="/openapi.json")
 
 if settings.cors_origins:
     app.add_middleware(
@@ -71,74 +67,31 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
             cl = request.headers.get("content-length")
             try:
                 if cl and int(cl) > self.max_bytes:
-                    return PlainTextResponse("Request entity too large", status_code=413)
+                    rid = getattr(request.state, "request_id", str(uuid.uuid4()))
+                    request.state.request_id = rid
+                    return JSONResponse(
+                        problem("Request Entity Too Large", 413, rid),
+                        status_code=413,
+                        media_type="application/problem+json",
+                    )
             except Exception:
                 pass
             body = await request.body()
             if len(body) > self.max_bytes:
-                return PlainTextResponse("Request entity too large", status_code=413)
+                rid = getattr(request.state, "request_id", str(uuid.uuid4()))
+                request.state.request_id = rid
+                return JSONResponse(
+                    problem("Request Entity Too Large", 413, rid),
+                    status_code=413,
+                    media_type="application/problem+json",
+                )
             # allow downstream to reuse without re-reading
             request._body = body
         return await call_next(request)
 
 
 app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.request_body_max_bytes)
-
-
-# --- Simple in-memory rate limiter ---------------------------------------
-class _InMemoryRateLimiter:
-    def __init__(self, rate: float) -> None:
-        self.rate = max(0.0, float(rate))
-        self.capacity = max(1.0, self.rate if self.rate > 0 else 1.0)
-        self.state: dict[str, tuple[float, float]] = {}
-
-    def allow(self, key: str) -> bool:
-        now = time.monotonic()
-        tokens, ts = self.state.get(key, (self.capacity, now))
-        tokens = min(self.capacity, tokens + (now - ts) * self.rate)
-        ok = tokens >= 1.0
-        if ok:
-            tokens -= 1.0
-        self.state[key] = (tokens, now)
-        return ok
-
-
-_limiter = _InMemoryRateLimiter(settings.rate_limit_qps)
-
-
-# --- Request telemetry + rate limit --------------------------------------
-@app.middleware("http")
-async def add_request_id_and_timing(
-    request: Request, call_next: Callable[[Request], Awaitable[Response]]
-) -> Response:
-    rid = str(uuid.uuid4())
-    request.state.request_id = rid
-    start = time.perf_counter()
-    client_ip = request.client.host if request.client else "-"
-    path = request.url.path
-
-    # rate limit (skip if disabled)
-    if settings.rate_limit_qps > 0:
-        key = f"{client_ip}:{path}"
-        if not _limiter.allow(key):
-            return JSONResponse(_problem("Too Many Requests", 429, rid), status_code=429)
-
-    response: Response | None = None
-    try:
-        response = await call_next(request)
-        return response
-    finally:
-        dur_ms = (time.perf_counter() - start) * 1000
-        jsonlog(
-            "request",
-            request_id=rid,
-            method=request.method,
-            path=path,
-            status=(response.status_code if response else 500),
-            duration_ms=round(dur_ms, 2),
-            user_agent=request.headers.get("user-agent", "-"),
-            ip=client_ip,
-        )
+app.add_middleware(RequestIdMiddleware, header_name=settings.request_id_header)
 
 
 # --- Error handlers (Problem Details) ------------------------------------
@@ -146,16 +99,21 @@ async def add_request_id_and_timing(
 async def http_exc_handler(request: Request, exc: HTTPException) -> Response:
     rid = getattr(request.state, "request_id", str(uuid.uuid4()))
     return JSONResponse(
-        _problem(exc.detail or "HTTP error", exc.status_code, rid),
+        problem(exc.detail or "HTTP error", exc.status_code, rid),
         status_code=exc.status_code,
+        media_type="application/problem+json",
     )
 
 
 @app.exception_handler(Exception)
 async def unhandled_exc_handler(request: Request, exc: Exception) -> Response:
     rid = getattr(request.state, "request_id", str(uuid.uuid4()))
-    logger.exception("unhandled", extra={"request_id": rid})
-    return JSONResponse(_problem("Internal Server Error", 500, rid), status_code=500)
+    logger.exception("unhandled", request_id=rid)
+    return JSONResponse(
+        problem("Internal Server Error", 500, rid),
+        status_code=500,
+        media_type="application/problem+json",
+    )
 
 
 # --- Auth (API key OR JWT if configured) ---------------------------------
@@ -169,6 +127,8 @@ def require_auth(
     key: str | None = _api_key_dep,
     token: HTTPAuthorizationCredentials | None = _bearer_dep,
 ) -> None:
+    if settings.fuzz_mode:
+        return
     if not settings.api_key and not settings.jwt_secret:
         return  # no auth configured
     if settings.api_key and key == settings.api_key:
@@ -195,6 +155,7 @@ def health() -> dict[str, Any]:
     return {"ok": True, "version": APP_VERSION, "git_sha": GIT_SHA}
 
 
+codex/set-up-ci-workflow-with-coverage-gate-2fsau3
 @app.get("/api/v1/search")
 def search(q: str, backend: str = "bm25", k: int = 5) -> dict[str, Any]:
     try:
@@ -216,6 +177,17 @@ def search(q: str, backend: str = "bm25", k: int = 5) -> dict[str, Any]:
         ],
     }
 
+def _ready_probe() -> bool:
+    """Lightweight readiness check placeholder."""
+    return True
+
+
+class ReadyResponse(BaseModel):
+    ready: bool
+    version: str
+    git_sha: str
+ main
+
 
 # Small extra router: a protected ping + a POST sink for body-limit tests
 from fastapi import APIRouter  # noqa: E402
@@ -223,12 +195,44 @@ from fastapi import APIRouter  # noqa: E402
 _phase2 = APIRouter()
 
 
-@_phase2.get("/secure/ping", dependencies=[Depends(require_auth)])
+@_phase2.get(
+    "/ready",
+    response_model=ReadyResponse,
+    responses={
+        200: {
+            "description": "Service readiness",
+            "content": {
+                "application/json": {
+                    "example": {"ready": True, "version": APP_VERSION, "git_sha": GIT_SHA}
+                }
+            },
+        }
+    },
+)
+def ready() -> ReadyResponse:
+    return ReadyResponse(ready=_ready_probe(), version=APP_VERSION, git_sha=GIT_SHA)
+
+
+@_phase2.get(
+    "/secure/ping",
+    dependencies=[Depends(require_auth)],
+    responses={
+        401: {"description": "Unauthorized"},
+        403: {"description": "Forbidden"},
+        429: {"description": "Too Many Requests"},
+    },
+)
 def secure_ping() -> dict[str, Any]:
     return {"ok": True, "secure": True}
 
 
-@_phase2.post("/sink")
+@_phase2.post(
+    "/sink",
+    responses={
+        413: {"description": "Request Entity Too Large"},
+        429: {"description": "Too Many Requests"},
+    },
+)
 def sink_endpoint(_: Any = None) -> dict[str, Any]:
     return {"ok": True}
 
@@ -238,12 +242,13 @@ app.include_router(v1_router, prefix="/api/v1")
 app.include_router(_phase2, prefix="/api/v1")
 
 
-# --- telemetry startup hook ---
+# --- startup hook --------------------------------------------------------
 @app.on_event("startup")
-def _init_tracing() -> None:
+def _startup() -> None:
+    configure_logging(settings)
     try:
         from fastapi_app.app.telemetry import init_otel  # local import to avoid E402
 
         init_otel()
-    except Exception:
+    except Exception:  # pragma: no cover - optional telemetry
         pass
