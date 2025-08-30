@@ -1,0 +1,46 @@
+name: Semantic PR Title
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review, labeled, unlabeled]
+
+permissions:
+  pull-requests: read
+  statuses: write
+  contents: read
+
+jobs:
+  semantic-pr:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Allowed Conventional Commit types (expand if needed).
+          types: |
+            build
+            chore
+            ci
+            docs
+            feat
+            fix
+            perf
+            refactor
+            revert
+            style
+            test
+          # Scopes optional for now; can be enforced later.
+          requireScope: false
+          # Keep subjects tidy: start lowercase; ≤80 chars.
+          subjectPattern: ^(?![A-Z]).{1,80}$
+          subjectPatternError: >
+            The subject must start lowercase and be ≤80 chars.
+            Examples: "feat(api): add request-id middleware", "ci: add matrix".
+          wip: false
+          validateSingleCommit: false
+          # Labels that can bypass the check (rarely used).
+          ignoreLabels: |
+            dependencies
+            skip-semantic
