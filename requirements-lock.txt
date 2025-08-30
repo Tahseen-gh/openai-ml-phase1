@@ -9,7 +9,7 @@ charset-normalizer==3.4.3
 click==8.2.1
 colorama==0.4.6
 coverage==7.10.5
-cyclonedx-python-lib==7.6.2
+cyclonedx-python-lib==11.0.0
 defusedxml==0.7.1
 distlib==0.4.0
 fastapi==0.116.1
