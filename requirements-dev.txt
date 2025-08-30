@@ -1,7 +1,7 @@
 mypy==1.11.2
 pytest-cov==5.0.0
 pip-audit==2.7.3
-types-requests==2.32.0.20241016
+types-requests==2.32.4.20250809
 
 bandit>=1.7
 
