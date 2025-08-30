@@ -22,9 +22,19 @@ class Settings(BaseSettings):
     # Protection
     rate_limit_qps: float = 5.0
     request_body_max_bytes: int = 100_000
+    fuzz_mode: bool = False
 
     # Observability
     metrics_enabled: bool = True
+    json_logs: bool = True
+    log_level: str = "INFO"
+    request_id_header: str = "X-Request-ID"
+
+    # Retrieval / RAG
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    hybrid_alpha: float = 0.5
+    use_dummy_embeddings: bool = False
+    allowed_regression_delta: float = 0.01
 
 
 settings = Settings()
