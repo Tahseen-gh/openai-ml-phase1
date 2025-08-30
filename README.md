@@ -115,9 +115,22 @@ The dataset is pinned via `data/manifest.json`; hashes are checked in tests for 
 =======
 ## Security
 
-- **Bandit** runs in pre-commit and CI. Any MEDIUM or HIGH findings fail the build; suppress only with a justified `# nosec` comment.
-- **pip-audit** runs in CI to report vulnerable dependencies (currently non-blocking).
-- **Dependabot** opens weekly grouped PRs for runtime libraries, dev tools, and GitHub Actions with `dependencies` and `security` labels.
+- **Bandit** runs in **pre-commit** and in CI (job **security / bandit**). The CI job is **blocking** for
+  MEDIUM/HIGH severity & confidence findings.
+- **pip-audit** runs in CI (job **security / pip-audit**) and currently **does not block**. We’ll flip it
+  to blocking after triage.
+- **Dependabot** is enabled for `pip` (grouped runtime/dev) and **GitHub Actions** (grouped), with weekly
+  updates and auto-rebase. Look for labels `dependencies` and `security`.
+
+**Suppressing Bandit**: If you truly must waive a finding, add an inline `# nosec` and link a justification
+in the PR. Avoid blanket suppressions.
+
+**Local checks**:
+```bash
+pre-commit run --all-files
+bandit -r fastapi_app -x tests,__pycache__ --severity-level medium --confidence-level medium
+pip-audit -r requirements.txt
+```
 
 ## Operations
 

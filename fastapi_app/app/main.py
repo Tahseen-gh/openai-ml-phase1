@@ -154,8 +154,12 @@ GIT_SHA = os.getenv("GIT_SHA", "dev")
 def health() -> dict[str, Any]:
     return {"ok": True, "version": APP_VERSION, "git_sha": GIT_SHA}
 
+ codex/locate-and-fix-critical-bug-4f0qez
+
+
 codex/locate-and-fix-critical-bug-2qin69
 main
+ main
 @app.get("/api/v1/search")
 def search(q: str, backend: str = "bm25", k: int = 5) -> dict[str, Any]:
     try:
@@ -187,10 +191,13 @@ class ReadyResponse(BaseModel):
     ready: bool
     version: str
     git_sha: str
+ codex/locate-and-fix-critical-bug-4f0qez
+
 codex/locate-and-fix-critical-bug-2qin69
-=======
+
 
 main
+ main
 
 
 # Small extra router: a protected ping + a POST sink for body-limit tests
